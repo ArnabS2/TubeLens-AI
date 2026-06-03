@@ -1353,7 +1353,7 @@ with st.container(border=True):
 
     st.caption("Supports YouTube videos, shorts and youtu.be links")
 
-    
+
     # ── STATS BAR ──
 st.markdown("""
 <div class="stats-bar">
@@ -1508,12 +1508,12 @@ if analyze:
 
                         boost = 0
                         if views_per_hour > 10000:
-                            boost += 0.20
+                            boost += 0.05
                         
                         if like_ratio > 0.04:
-                            boost += 0.10
+                            boost += 0.03
 
-                        probability = min(probability + boost,1.0)
+                        probability = min(probability + boost, 0.92)
 
                         score           = int(probability * 100)
                         prob_pct        = f"{probability * 100:.2f}"
