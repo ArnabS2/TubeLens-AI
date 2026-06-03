@@ -1,0 +1,14 @@
+streamlit
+pandas
+numpy
+joblib
+plotly
+scikit-learn
+matplotlib
+seaborn
+xgboost
+requests
+google-api-python-client
+google-api-core
+google-auth
+protobuf
