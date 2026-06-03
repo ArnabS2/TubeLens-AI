@@ -1314,28 +1314,77 @@ if page in ("Home", "Prediction"):
 </div>
 """, unsafe_allow_html=True)
 
-    # ── URL INPUT CARD ──
-    st.markdown("""
+# ── URL INPUT CARD ──
+st.markdown("""
 <style>
-/* Fix button height to match input */
-.stButton > button { height: 54px !important; }
-/* Columns vertically aligned */
-[data-testid="stHorizontalBlock"] { align-items: center !important; }
+.url-card-single {
+    max-width: 760px;
+    margin: 0 auto 28px auto;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 20px;
+    padding: 24px 28px 22px 28px;
+}
+
+.url-card-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: #f1f5f9;
+    margin-bottom: 18px;
+    text-align: left;
+}
+
+.url-card-help {
+    font-size: 13px;
+    color: #64748b;
+    margin-top: 12px;
+    text-align: left;
+}
+
+.stTextInput > div > div {
+    height: 48px !important;
+    min-height: 48px !important;
+}
+
+.stTextInput input {
+    height: 48px !important;
+    line-height: 48px !important;
+}
+
+.stButton > button {
+    height: 48px !important;
+}
 </style>
 """, unsafe_allow_html=True)
 
-    st.markdown('<div class="url-card-top">🔗 Enter YouTube URL</div>', unsafe_allow_html=True)
-    _, col_url, col_btn = st.columns([0.15, 4.8, 1.05])
-    with col_url:
-        video_url = st.text_input(
-            "url", placeholder="https://youtube.com/shorts/xxxxxxxxxxx or https://youtube.com/watch?v=xxxxxxxxxxx",
-            label_visibility="collapsed"
-        )
-    with col_btn:
-        analyze = st.button("✨ Predict Virality")
-    st.markdown('<div class="url-card-bot">✂️ Paste a valid YouTube Shorts or video URL to analyze its viral potential</div>', unsafe_allow_html=True)
+st.markdown('<div class="url-card-single">', unsafe_allow_html=True)
+
+st.markdown(
+    '<div class="url-card-title">🔗 Enter YouTube URL</div>',
+    unsafe_allow_html=True
+)
+
+col_url, col_btn = st.columns([4.2, 1])
+
+with col_url:
+    video_url = st.text_input(
+        "url",
+        placeholder="Paste YouTube video or shorts URL",
+        label_visibility="collapsed"
+    )
+
+with col_btn:
+    analyze = st.button("Predict", use_container_width=True)
+
+st.markdown(
+    '<div class="url-card-help">Supports YouTube videos, shorts and youtu.be links</div>',
+    unsafe_allow_html=True
+)
+
+st.markdown('</div>', unsafe_allow_html=True)
+
     # ── STATS BAR ──
-    st.markdown("""
+st.markdown("""
 <div class="stats-bar">
   <div class="stat-item">
     <div class="stat-icon stat-icon-orange">📊</div>
@@ -1369,7 +1418,7 @@ if page in ("Home", "Prediction"):
 """, unsafe_allow_html=True)
 
     # ── FEATURES SECTION ──
-    st.markdown("""
+st.markdown("""
 <div class="features-section">
   <div class="features-heading">
     <div class="features-heading-line">
@@ -1410,7 +1459,7 @@ if page in ("Home", "Prediction"):
 """, unsafe_allow_html=True)
 
     # ── PREDICTION RESULT ──
-    if analyze:
+if analyze:
         if not video_url.strip():
             st.error("Please paste a YouTube Shorts or video URL.")
         else:
