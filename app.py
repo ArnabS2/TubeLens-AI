@@ -1497,7 +1497,7 @@ if page in ("Home", "Prediction"):
 
                         score           = int(probability * 100)
                         prob_pct        = f"{probability * 100:.2f}"
-                        estimated_views = int(views * (1 + probability * 5))
+                        estimated_views = int(views * (1 + probability * 1.2))
 
                         if score >= 65:
                             verdict, vp_cls, sv_cls = "High",   "vp-high",   "v-purple"
