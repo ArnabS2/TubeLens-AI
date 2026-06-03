@@ -1317,72 +1317,43 @@ if page in ("Home", "Prediction"):
 # ── URL INPUT CARD ──
 st.markdown("""
 <style>
-.url-card-single {
-    max-width: 760px;
+div[data-testid="stVerticalBlockBorderWrapper"] {
+    max-width: 900px;
     margin: 0 auto 28px auto;
-    background: rgba(255,255,255,0.03);
-    border: 1px solid rgba(255,255,255,0.08);
-    border-radius: 20px;
-    padding: 24px 28px 22px 28px;
-}
-
-.url-card-title {
-    font-size: 20px;
-    font-weight: 700;
-    color: #f1f5f9;
-    margin-bottom: 18px;
-    text-align: left;
-}
-
-.url-card-help {
-    font-size: 13px;
-    color: #64748b;
-    margin-top: 12px;
-    text-align: left;
-}
-
-.stTextInput > div > div {
-    height: 48px !important;
-    min-height: 48px !important;
-}
-
-.stTextInput input {
-    height: 48px !important;
-    line-height: 48px !important;
+    background: rgba(255,255,255,0.03) !important;
+    border: 1px solid rgba(255,255,255,0.08) !important;
+    border-radius: 20px !important;
+    padding: 8px !important;
 }
 
 .stButton > button {
-    height: 48px !important;
+    height: 50px !important;
+}
+
+[data-testid="stHorizontalBlock"] {
+    align-items: center !important;
 }
 </style>
 """, unsafe_allow_html=True)
 
-st.markdown('<div class="url-card-single">', unsafe_allow_html=True)
+with st.container(border=True):
+    st.markdown("### 🔗 Enter YouTube URL")
 
-st.markdown(
-    '<div class="url-card-title">🔗 Enter YouTube URL</div>',
-    unsafe_allow_html=True
-)
+    col_url, col_btn = st.columns([5, 1])
 
-col_url, col_btn = st.columns([4.2, 1])
+    with col_url:
+        video_url = st.text_input(
+            "url",
+            placeholder="Paste YouTube video or shorts URL",
+            label_visibility="collapsed"
+        )
 
-with col_url:
-    video_url = st.text_input(
-        "url",
-        placeholder="Paste YouTube video or shorts URL",
-        label_visibility="collapsed"
-    )
+    with col_btn:
+        analyze = st.button("Predict", use_container_width=True)
 
-with col_btn:
-    analyze = st.button("Predict", use_container_width=True)
+    st.caption("Supports YouTube videos, shorts and youtu.be links")
 
-st.markdown(
-    '<div class="url-card-help">Supports YouTube videos, shorts and youtu.be links</div>',
-    unsafe_allow_html=True
-)
-
-st.markdown('</div>', unsafe_allow_html=True)
-
+    
     # ── STATS BAR ──
 st.markdown("""
 <div class="stats-bar">
