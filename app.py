@@ -10,7 +10,7 @@ import plotly.graph_objects as go # type: ignore
 # ─────────────────────────────────────────────────────────────────
 st.set_page_config(
     page_title="TubeLens AI",
-    page_icon="🚀",
+    page_icon="▶️",
     layout="wide",
     initial_sidebar_state="collapsed"
 )
