@@ -9,7 +9,7 @@ import plotly.graph_objects as go # type: ignore
 # PAGE CONFIG
 # ─────────────────────────────────────────────────────────────────
 st.set_page_config(
-    page_title="ViraLens AI",
+    page_title="TubeLens AI",
     page_icon="🚀",
     layout="wide",
     initial_sidebar_state="collapsed"
@@ -1198,7 +1198,7 @@ if page in ("Home", "Prediction"):
 <div class="hero-wrap">
   <div class="hero-left">
     <div class="eyebrow-tag">AI-Powered Prediction</div>
-    <div class="hero-title">ViraLens</div>
+    <div class="hero-title">TubeLens</div>
     <span class="hero-title-grad">AI</span>
     <p class="hero-desc">
       Predict the future virality of YouTube Shorts using
@@ -1725,7 +1725,7 @@ elif page == "About":
 <div class="info-card">
   <div class="info-card-title">About This Project</div>
   <p style="color:#94a3b8;font-size:15px;line-height:1.8;margin:0">
-    ViraLens AI uses real-time YouTube Data API signals combined with a trained
+    TubeLens AI uses real-time YouTube Data API signals combined with a trained
     XGBoost classifier to predict whether a YouTube Short has the potential to go viral.
     It analyses engagement patterns, upload timing, content metadata, and audience interaction
     to generate a virality score from 0 to 100.
@@ -1779,6 +1779,6 @@ elif page == "How It Works":
 # ── FOOTER ──
 st.markdown("""
 <div class="site-footer">
-  © 2025 ViraLens AI. All rights reserved.
+  © 2025 TubeLens AI. All rights reserved.
 </div>
 """, unsafe_allow_html=True)
