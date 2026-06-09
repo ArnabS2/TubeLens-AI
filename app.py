@@ -4,17 +4,13 @@ import numpy as np
 import pandas as pd
 from googleapiclient.discovery import build
 import plotly.graph_objects as go # type: ignore
-from urllib.parse import urlparse, parse_qs
-
-APP_NAME = "TubeLens AI"
-APP_TAGLINE = "AI-powered YouTube Shorts & videos virality predictor"
 
 # ─────────────────────────────────────────────────────────────────
 # PAGE CONFIG
 # ─────────────────────────────────────────────────────────────────
 st.set_page_config(
-    page_title=APP_NAME,
-    page_icon="▶️",
+    page_title="ViraLens AI",
+    page_icon="🚀",
     layout="wide",
     initial_sidebar_state="collapsed"
 )
@@ -23,16 +19,14 @@ st.set_page_config(
 # LOAD MODEL & API
 # ─────────────────────────────────────────────────────────────────
 @st.cache_resource
-def load_models():
-    shorts_model = joblib.load("future_viral_predictor.pkl")
-    videos_model = joblib.load("videos_model.pkl")
-    return shorts_model, videos_model
+def load_model():
+    return joblib.load("future_viral_predictor.pkl")
 
 @st.cache_resource
 def get_youtube_client():
     return build("youtube", "v3", developerKey=st.secrets["API_KEY"])
 
-shorts_model, videos_model = load_models()
+model   = load_model()
 youtube = get_youtube_client()
 
 # ─────────────────────────────────────────────────────────────────
@@ -51,56 +45,10 @@ def fmt(n):
     return str(n)
 
 def extract_video_id(url):
-    """Extract YouTube video id from Shorts, watch, embed, or youtu.be URLs."""
     url = url.strip()
-    parsed = urlparse(url if url.startswith(("http://", "https://")) else "https://" + url)
-    host = parsed.netloc.lower().replace("www.", "")
-    path = parsed.path.strip("/")
-
-    if host == "youtu.be" and path:
-        return path.split("/")[0]
-    if host.endswith("youtube.com"):
-        if path.startswith("shorts/"):
-            return path.split("/")[1]
-        if path.startswith("embed/"):
-            return path.split("/")[1]
-        query_id = parse_qs(parsed.query).get("v", [None])[0]
-        if query_id:
-            return query_id
-    return None
-
-def extract_instagram_id(url):
-    """Extract Instagram reel/post id from reel, reels, p, or tv URLs."""
-    url = url.strip()
-    parsed = urlparse(url if url.startswith(("http://", "https://")) else "https://" + url)
-    host = parsed.netloc.lower().replace("www.", "")
-    parts = [x for x in parsed.path.split("/") if x]
-
-    if host.endswith("instagram.com") and len(parts) >= 2:
-        if parts[0] in ("reel", "reels", "p", "tv"):
-            return parts[1]
-    return None
-
-def detect_platform_and_id(url):
-    """Return ('youtube'/'instagram'/None, id/None)."""
-    yt_id = extract_video_id(url)
-    if yt_id:
-        return "youtube", yt_id
-
-    ig_id = extract_instagram_id(url)
-    if ig_id:
-        return "instagram", ig_id
-
-    return None, None
-
-
-def detect_url_type(url):
-    """Detect whether a YouTube URL is a Short or a normal video."""
-    url = url.strip().lower()
-    if "shorts/" in url:
-        return "Shorts"
-    if "watch?v=" in url or "youtu.be/" in url or "embed/" in url:
-        return "Video"
+    if "shorts/"   in url: return url.split("shorts/")[1].split("?")[0].split("/")[0]
+    if "watch?v="  in url: return url.split("watch?v=")[1].split("&")[0]
+    if "youtu.be/" in url: return url.split("youtu.be/")[1].split("?")[0]
     return None
 
 def build_gauge(score):
@@ -1186,15 +1134,6 @@ st.markdown("""
 # TOP NAVIGATION TABS
 # ─────────────────────────────────────────────────────────────────
 
-st.markdown("""
-<div style="
-display:flex;
-gap:12px;
-padding:20px 40px 10px 40px;
-flex-wrap:wrap;
-">
-""", unsafe_allow_html=True)
-
 nav1, nav2, nav3, nav4, nav5, nav6, nav7, nav8 = st.columns(8)
 
 with nav1:
@@ -1258,12 +1197,12 @@ if page in ("Home", "Prediction"):
     st.markdown("""
 <div class="hero-wrap">
   <div class="hero-left">
-    <div class="eyebrow-tag">YouTube AI Prediction</div>
-    <div class="hero-title">TubeLens</div>
+    <div class="eyebrow-tag">AI-Powered Prediction</div>
+    <div class="hero-title">ViraLens</div>
     <span class="hero-title-grad">AI</span>
     <p class="hero-desc">
-      Predict the future virality of YouTube Shorts and videos using
-      advanced AI models, real-time YouTube data and machine learning.
+      Predict the future virality of YouTube Shorts using
+      advanced AI models, real-time data and machine learning.
     </p>
     <div class="hero-tags">
       <div class="hero-tag">📈 Real-time Analysis</div>
@@ -1314,48 +1253,28 @@ if page in ("Home", "Prediction"):
 </div>
 """, unsafe_allow_html=True)
 
-# ── URL INPUT CARD ──
-st.markdown("""
+    # ── URL INPUT CARD ──
+    st.markdown("""
 <style>
-div[data-testid="stVerticalBlockBorderWrapper"] {
-    max-width: 900px;
-    margin: 0 auto 28px auto;
-    background: rgba(255,255,255,0.03) !important;
-    border: 1px solid rgba(255,255,255,0.08) !important;
-    border-radius: 20px !important;
-    padding: 8px !important;
-}
-
-.stButton > button {
-    height: 50px !important;
-}
-
-[data-testid="stHorizontalBlock"] {
-    align-items: center !important;
-}
+/* Fix button height to match input */
+.stButton > button { height: 54px !important; }
+/* Columns vertically aligned */
+[data-testid="stHorizontalBlock"] { align-items: center !important; }
 </style>
 """, unsafe_allow_html=True)
 
-with st.container(border=True):
-    st.markdown("### 🔗 Enter YouTube URL")
-
-    col_url, col_btn = st.columns([5, 1])
-
+    st.markdown('<div class="url-card-top">🔗 Enter YouTube Shorts URL</div>', unsafe_allow_html=True)
+    _, col_url, col_btn = st.columns([0.15, 4.8, 1.05])
     with col_url:
         video_url = st.text_input(
-            "url",
-            placeholder="Paste YouTube video or shorts URL",
+            "url", placeholder="https://youtube.com/shorts/xxxxxxxxxxx",
             label_visibility="collapsed"
         )
-
     with col_btn:
-        analyze = st.button("Predict", use_container_width=True)
-
-    st.caption("Supports YouTube videos, shorts and youtu.be links")
-
-
+        analyze = st.button("✨ Predict Virality")
+    st.markdown('<div class="url-card-bot">✂️ Paste a valid YouTube Shorts URL to analyze its viral potential</div>', unsafe_allow_html=True)
     # ── STATS BAR ──
-st.markdown("""
+    st.markdown("""
 <div class="stats-bar">
   <div class="stat-item">
     <div class="stat-icon stat-icon-orange">📊</div>
@@ -1389,7 +1308,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
     # ── FEATURES SECTION ──
-st.markdown("""
+    st.markdown("""
 <div class="features-section">
   <div class="features-heading">
     <div class="features-heading-line">
@@ -1430,21 +1349,14 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
     # ── PREDICTION RESULT ──
-if analyze:
+    if analyze:
         if not video_url.strip():
-            st.error("Please paste a YouTube Shorts or video URL.")
+            st.error("Please paste a YouTube Shorts URL.")
         else:
-            platform, content_id = detect_platform_and_id(video_url.strip())
-
-            if not platform:
-                st.error("Invalid URL — use a YouTube Shorts, watch, youtu.be, or Instagram reel/post link.")
-            elif platform == "instagram":
-                st.warning(
-                    "Instagram URL detected, but this model currently uses YouTube Data API + YouTube-trained features. "
-                    "To predict Instagram Reels accurately, you need Instagram Graph API metrics and a model trained on Instagram data."
-                )
+            vid_id = extract_video_id(video_url.strip())
+            if not vid_id:
+                st.error("Invalid URL — use a YouTube Shorts, watch, or youtu.be link.")
             else:
-                vid_id = content_id
                 with st.spinner("Fetching video data & running AI prediction..."):
                     try:
                         resp = youtube.videos().list(
@@ -1496,28 +1408,20 @@ if analyze:
                             engagement_rate
                         ]])
 
-                        url_type = detect_url_type(video_url.strip())
-                        if url_type == "Shorts":
-                            active_model = shorts_model
-                            type_label = "YouTube Short"
-                        else:
-                            active_model = videos_model
-                            type_label = "YouTube Video"
-
-                        probability = active_model.predict_proba(sample)[0][1]
+                        probability     = model.predict_proba(sample)[0][1]
 
                         boost = 0
                         if views_per_hour > 10000:
-                            boost += 0.05
+                            boost += 0.20
                         
                         if like_ratio > 0.04:
-                            boost += 0.03
+                            boost += 0.10
 
-                        probability = min(probability + boost, 0.92)
+                        probability = min(probability + boost,1.0)
 
                         score           = int(probability * 100)
                         prob_pct        = f"{probability * 100:.2f}"
-                        estimated_views = int(views * (1 + probability * 1.2))
+                        estimated_views = int(views * (1 + probability * 5))
 
                         if score >= 65:
                             verdict, vp_cls, sv_cls = "High",   "vp-high",   "v-purple"
@@ -1583,7 +1487,6 @@ if analyze:
                             st.markdown(f"""
 <hr class="vl-div">
 <div class="section-lbl">Video Details</div>
-<div class="meta-row"><span class="mk">Type</span><span class="mv">{type_label}</span></div>
 <div class="meta-row"><span class="mk">Title</span><span class="mv">{title}</span></div>
 <div class="meta-row"><span class="mk">Channel</span><span class="mv">{channel_title}</span></div>
 <div class="meta-row"><span class="mk">Published</span><span class="mv">{published.strftime('%d %b %Y, %H:%M UTC')}</span></div>
@@ -1822,8 +1725,8 @@ elif page == "About":
 <div class="info-card">
   <div class="info-card-title">About This Project</div>
   <p style="color:#94a3b8;font-size:15px;line-height:1.8;margin:0">
-    TubeLens AI uses real-time YouTube Data API signals combined with a trained
-    XGBoost classifier to predict whether a YouTube Short or normal YouTube video has the potential to go viral.
+    ViraLens AI uses real-time YouTube Data API signals combined with a trained
+    XGBoost classifier to predict whether a YouTube Short has the potential to go viral.
     It analyses engagement patterns, upload timing, content metadata, and audience interaction
     to generate a virality score from 0 to 100.
   </p>
@@ -1864,10 +1767,10 @@ elif page == "How It Works":
 <div class="info-card">
   <div class="info-card-title">How It Works</div>
   <ul class="info-list">
-    <li>Paste any YouTube Shorts or normal YouTube video URL into the input field</li>
+    <li>Paste any YouTube Shorts URL into the input field</li>
     <li>We fetch live video data via YouTube Data API v3</li>
     <li>Features like title length, hashtags, upload time are extracted</li>
-    <li>The correct XGBoost model is selected automatically for Shorts or videos</li>
+    <li>XGBoost model predicts viral probability in real-time</li>
     <li>Score, verdict, feature signals and estimated reach are displayed</li>
   </ul>
 </div>""", unsafe_allow_html=True)
@@ -1876,6 +1779,6 @@ elif page == "How It Works":
 # ── FOOTER ──
 st.markdown("""
 <div class="site-footer">
-  © 2025 TubeLens AI. All rights reserved.
+  © 2025 ViraLens AI. All rights reserved.
 </div>
 """, unsafe_allow_html=True)
