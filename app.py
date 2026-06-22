@@ -44,6 +44,17 @@ def fmt(n):
     if n >= 1_000:         return f"{n/1_000:.1f}K"
     return str(n)
 
+def save_prediction_result(row, filename="prediction_results.csv"):
+    df_new = pd.DataFrame([row])
+
+    try:
+        old_df = pd.read_csv(filename)
+        final_df = pd.concat([old_df, df_new], ignore_index=True)
+    except FileNotFoundError:
+        final_df = df_new
+
+    final_df.to_csv(filename, index=False)  
+
 def extract_video_id(url):
     url = url.strip()
     if "shorts/"   in url: return url.split("shorts/")[1].split("?")[0].split("/")[0]
@@ -1421,7 +1432,7 @@ if page in ("Home", "Prediction"):
 
                         score           = int(probability * 100)
                         prob_pct        = f"{probability * 100:.2f}"
-                        estimated_views = int(views * (1 + probability * 5))
+                        estimated_views = int(views * (1 + probability * 0.8))
 
                         if score >= 65:
                             verdict, vp_cls, sv_cls = "High",   "vp-high",   "v-purple"
@@ -1429,6 +1440,22 @@ if page in ("Home", "Prediction"):
                             verdict, vp_cls, sv_cls = "Medium", "vp-medium", "v-amber"
                         else:
                             verdict, vp_cls, sv_cls = "Low",    "vp-low",    "v-red"
+
+                        save_prediction_result({
+                        "prediction_time": pd.Timestamp.now().strftime("%Y-%m-%d %H:%M:%S"),
+                        "video_url": video_url,
+                        "video_id": vid_id,
+                        "title": title,
+                        "channel": channel_title,
+                        "views": views,
+                        "likes": likes,
+                        "comments": comments,
+                        "engagement_rate": round(engagement_rate * 100, 2),
+                        "viral_score": score,
+                        "probability_percent": round(probability * 100, 2),
+                        "verdict": verdict,
+                        "estimated_future_views": estimated_views
+                        })
 
                         feat_names = ["Engagement Rate","Like Ratio","View Volume",
                                       "Comment Activity","Tag Richness","Title Length","Upload Timing"]
